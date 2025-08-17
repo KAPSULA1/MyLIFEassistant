@@ -1,25 +1,33 @@
-name: Life Assistant Bot
+name: Run Personal Assistant Bot
 
 on:
+  push:
+    branches:
+      - main
   schedule:
-    - cron: '*/15 * * * *'  # every 15 minutes
-  workflow_dispatch:       # manual run
+    - cron: '*/15 * * * *'  # Runs every 15 minutes (optional)
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Python
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Run bot
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: python bot_runner.py
+        run: |
+          python personal_assistant.py
