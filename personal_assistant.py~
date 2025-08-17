@@ -1,27 +1,17 @@
 #!/usr/bin/env python3
 """
 Personal Life Assistant Bot
-Fully GitHub Actions-ready with secrets
+Fully automated Telegram life assistant
 """
 
 import requests
-import schedule
-import time
 import random
-import os
 from datetime import datetime
 
-# Fetch secrets from environment variables
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-CHAT_ID = os.environ.get("CHAT_ID")
-
-if not BOT_TOKEN or not CHAT_ID:
-    raise ValueError("❌ BOT_TOKEN or CHAT_ID not found in environment variables!")
-
 class PersonalAssistant:
-    def __init__(self):
-        self.bot_token = BOT_TOKEN
-        self.chat_id = CHAT_ID
+    def __init__(self, bot_token, chat_id):
+        self.bot_token = bot_token
+        self.chat_id = chat_id
 
     def send_telegram(self, message):
         """Send message via Telegram bot"""
@@ -44,10 +34,8 @@ class PersonalAssistant:
         current_date = datetime.now().strftime("%A, %B %d, %Y")
         current_time = datetime.now().strftime("%H:%M")
         motivational_starts = [
-            "🌅 Rise and shine!",
-            "☀️ Good morning, champion!",
-            "🌟 Start your day with purpose!",
-            "💪 Ready to conquer today?",
+            "🌅 Rise and shine!", "☀️ Good morning, champion!",
+            "🌟 Start your day with purpose!", "💪 Ready to conquer today?",
             "🚀 Let's make today amazing!"
         ]
         daily_tips = [
@@ -79,9 +67,9 @@ Have an amazing day! ✨
 
     def habit_tracker_reminder(self):
         habit_categories = {
-            "Health & Wellness": ["💧 Drink 8 glasses of water", "🏃‍♂️ 20+ minutes of exercise", "🧘‍♀️ 5 minutes meditation/breathing"],
-            "Personal Growth": ["📚 Read for 15+ minutes", "📝 Journal or reflect", "🎧 Listen to educational content"],
-            "Productivity": ["🎯 Complete your #1 priority", "📱 Limit social media to 30 mins", "🛏️ Prepare tomorrow's outfit/tasks"]
+            "Health & Wellness": ["💧 Drink 8 glasses of water", "🏃‍♂️ 20+ min exercise", "🧘‍♀️ 5 min meditation"],
+            "Personal Growth": ["📚 Read 15+ min", "📝 Journal", "🎧 Listen to educational content"],
+            "Productivity": ["🎯 Complete #1 priority", "📱 Limit social media to 30 mins", "🛏️ Prepare tomorrow's tasks"]
         }
         message = "📋 <b>Daily Habit Check-in</b>\n\nTime to review your positive habits:\n\n"
         for category, habits in habit_categories.items():
@@ -89,7 +77,7 @@ Have an amazing day! ✨
             for habit in habits:
                 message += f"• {habit}\n"
             message += "\n"
-        message += "✅ <b>How many did you complete today?</b>\n\n🏆 <b>Remember:</b> Consistency beats perfection!"
+        message += "✅ <b>How many did you complete today?</b>\n\n🏆 <b>Consistency beats perfection!</b>"
         self.send_telegram(message)
 
     def evening_reflection(self):
@@ -105,37 +93,83 @@ Have an amazing day! ✨
 
 Take a moment to reflect and appreciate your day:
 
-🏆 <b>Today's Accomplishments:</b>
-• What 3 things did you complete today?
-• What progress did you make toward your goals?
-
 📚 <b>Today's Learning:</b>
 • {random.choice(reflection_prompts)}
-• What new insight did you gain?
 
 🙏 <b>Gratitude Moment:</b>
 • Name 3 things you're grateful for today
-• Who made your day better?
 
 🎯 <b>Tomorrow's Focus:</b>
 • What's your ONE priority for tomorrow?
-• How will you make tomorrow even better?
 
-😴 <b>Rest Well:</b>
-You've earned your rest. Tomorrow is another opportunity to shine! ⭐
+😴 <b>Rest Well</b> – You've earned your rest!
 """
         self.send_telegram(message)
 
-    def start(self):
-        """Schedule routines for GitHub Actions"""
-        # For GitHub Actions, run once a day, etc. Schedule inside YAML workflow
-        print("🤖 Personal Assistant triggered!")
+    def weekly_planning(self):
+        week_start = datetime.now().strftime("%B %d")
+        message = f"""
+📅 <b>Weekly Planning Session</b>
+Week of {week_start}
 
-        # Example triggers (you can adjust inside workflow)
-        self.morning_routine()
-        self.habit_tracker_reminder()
-        self.evening_reflection()
+🔍 <b>Last Week Review:</b>
+• Wins, challenges, lessons
 
-if __name__ == "__main__":
-    assistant = PersonalAssistant()
-    assistant.start()
+🎯 <b>This Week's Priorities:</b>
+• Top 5 goals
+• Biggest impact goal
+
+🏃‍♂️ <b>Habit Check:</b>
+• Which habits served you well last week?
+• Pick ONE new habit to focus on
+
+💪 <b>Self-Care Plan:</b>
+• Schedule downtime
+
+🚀 <b>Success Mantra:</b> "Plan your week, win your week!"
+"""
+        self.send_telegram(message)
+
+    def weekend_planning(self):
+        message = """
+🎉 <b>Weekend Vibes!</b>
+
+🛋️ Recharge:
+• Nature, hobbies, rest
+📋 Gentle Productivity:
+• Review wins, prep next week
+🌱 Personal Growth:
+• Read, learn, journal
+⚡ Energy Boost:
+• Move body, smile
+
+🎯 Enjoy your weekend! 🌟
+"""
+        self.send_telegram(message)
+
+    def motivational_boost(self):
+        messages = [
+            {"quote":"🚀 'Start doing, not just talking.'", "tip":"Take one small action now!"},
+            {"quote":"💪 'Success is courage to continue.'", "tip":"Every setback = setup for comeback!"},
+            {"quote":"🌟 'Only impossible journey is unstarted.'", "tip":"Start where you are!"}
+        ]
+        selected = random.choice(messages)
+        message = f"""
+💫 <b>Motivation Boost!</b>
+
+{selected['quote']}
+
+💡 <b>Action Tip:</b> {selected['tip']}
+"""
+        self.send_telegram(message)
+
+    def productivity_tips(self):
+        tips = [
+            "🍅 Try Pomodoro: 25 min work / 5 min break",
+            "📱 Put phone in another room to focus",
+            "🎵 Use instrumental or white noise to focus",
+            "🧹 Organize workspace before work"
+        ]
+        tip = random.choice(tips)
+        message = f"🧠 <b>Productivity Tip:</b>\n{tip}"
+        self.send_telegram(message)
